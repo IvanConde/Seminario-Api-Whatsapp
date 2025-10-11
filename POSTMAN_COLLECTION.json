@@ -1,0 +1,164 @@
+{
+  "info": {
+    "name": "WhatsApp Integration - Equipo 1",
+    "description": "Colección de endpoints para el servicio de integración WhatsApp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "test_phone",
+      "value": "+5491112345678",
+      "type": "string"
+    },
+    {
+      "key": "verify_token",
+      "value": "my_verify_token_123",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": [""]
+        },
+        "description": "Verifica que el servicio esté funcionando correctamente"
+      },
+      "response": []
+    },
+    {
+      "name": "Webhook - Verificación",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/webhook/whatsapp?hub.mode=subscribe&hub.verify_token={{verify_token}}&hub.challenge=test_challenge_123",
+          "host": ["{{base_url}}"],
+          "path": ["webhook", "whatsapp"],
+          "query": [
+            {
+              "key": "hub.mode",
+              "value": "subscribe",
+              "description": "Modo de suscripción"
+            },
+            {
+              "key": "hub.verify_token",
+              "value": "{{verify_token}}",
+              "description": "Token de verificación"
+            },
+            {
+              "key": "hub.challenge",
+              "value": "test_challenge_123",
+              "description": "Challenge enviado por Meta"
+            }
+          ]
+        },
+        "description": "Endpoint usado por Meta para verificar el webhook"
+      },
+      "response": []
+    },
+    {
+      "name": "Webhook - Recibir Mensaje",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"object\": \"whatsapp_business_account\",\n  \"entry\": [{\n    \"id\": \"123456789\",\n    \"changes\": [{\n      \"value\": {\n        \"messaging_product\": \"whatsapp\",\n        \"metadata\": {\n          \"display_phone_number\": \"15551234567\",\n          \"phone_number_id\": \"PHONE_NUMBER_ID\"\n        },\n        \"contacts\": [{\n          \"profile\": {\n            \"name\": \"Juan Pérez\"\n          },\n          \"wa_id\": \"5491112345678\"\n        }],\n        \"messages\": [{\n          \"from\": \"5491112345678\",\n          \"id\": \"wamid.HBgNNTQ5MTE1NTU1NTU1NRUCABIYFjNFQjBDMDhGRDFFMDRGRTRBMDk2AA==\",\n          \"timestamp\": \"1633024800\",\n          \"text\": {\n            \"body\": \"Hola, necesito información\"\n          },\n          \"type\": \"text\"\n        }]\n      },\n      \"field\": \"messages\"\n    }]\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/webhook/whatsapp",
+          "host": ["{{base_url}}"],
+          "path": ["webhook", "whatsapp"]
+        },
+        "description": "Simula un mensaje entrante desde WhatsApp (normalmente enviado por Meta)"
+      },
+      "response": []
+    },
+    {
+      "name": "Enviar Mensaje - Texto",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": \"{{test_phone}}\",\n  \"message\": \"Hola! Este es un mensaje de prueba desde el servicio de WhatsApp.\",\n  \"message_type\": \"text\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send/whatsapp",
+          "host": ["{{base_url}}"],
+          "path": ["send", "whatsapp"]
+        },
+        "description": "Envía un mensaje de texto a un número de WhatsApp"
+      },
+      "response": []
+    },
+    {
+      "name": "Enviar Mensaje - Imagen",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": \"{{test_phone}}\",\n  \"message\": \"Aquí está la imagen que solicitaste\",\n  \"message_type\": \"image\",\n  \"media_url\": \"https://picsum.photos/400/300\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send/whatsapp",
+          "host": ["{{base_url}}"],
+          "path": ["send", "whatsapp"]
+        },
+        "description": "Envía una imagen con caption a un número de WhatsApp"
+      },
+      "response": []
+    },
+    {
+      "name": "Enviar Mensaje - Emoji",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": \"{{test_phone}}\",\n  \"message\": \"¡Hola! 👋 Bienvenido a nuestro servicio 🎉\\n\\n✅ Tu solicitud ha sido recibida\\n📱 Te contactaremos pronto\\n💬 ¿Necesitas ayuda?\",\n  \"message_type\": \"text\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send/whatsapp",
+          "host": ["{{base_url}}"],
+          "path": ["send", "whatsapp"]
+        },
+        "description": "Envía un mensaje con emojis y formato"
+      },
+      "response": []
+    }
+  ]
+}
+
