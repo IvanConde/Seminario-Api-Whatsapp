@@ -92,11 +92,8 @@ async def receive_webhook(request: Request):
                         print(f"📨 Normalized message: {normalized.dict()}")
                         logger.info(f"Normalized message: {normalized.dict()}")
                         
-                        # Here you would typically:
-                        # 1. Store the message in a database
-                        # 2. Trigger business logic
-                        # 3. Send to a message queue
-                        # For now, we just log it
+                        # Forward to Core API
+                        await forward_to_core(normalized)
                         
                         # Auto-reply example (optional)
                         # await send_auto_reply(normalized.sender, normalized.message)
@@ -215,6 +212,35 @@ async def send_message(request: SendMessageRequest):
             success=False,
             error=str(e)
         )
+
+
+async def forward_to_core(normalized_message: NormalizedMessage):
+    """Forward normalized message to core API."""
+    import httpx
+    
+    core_url = "http://localhost:8003/api/v1/messages/unified"
+    
+    unified_message = {
+        "channel": normalized_message.channel,
+        "sender": normalized_message.sender,
+        "message": normalized_message.message,
+        "timestamp": normalized_message.timestamp,
+        "message_id": normalized_message.message_id,
+        "message_type": normalized_message.message_type
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(core_url, json=unified_message)
+            if response.status_code == 200:
+                logger.info("✅ Message forwarded to core successfully")
+                print("✅ Message forwarded to core successfully")
+            else:
+                logger.error(f"❌ Failed to forward to core: {response.status_code}")
+                print(f"❌ Failed to forward to core: {response.status_code}")
+    except Exception as e:
+        logger.error(f"❌ Error forwarding to core: {str(e)}")
+        print(f"❌ Error forwarding to core: {str(e)}")
 
 
 async def send_auto_reply(to: str, received_message: str):
