@@ -218,7 +218,7 @@ async def forward_to_core(normalized_message: NormalizedMessage):
     """Forward normalized message to core API."""
     import httpx
     
-    core_url = "http://localhost:8003/api/v1/messages/unified"
+    core_url = settings.core_api_url
     
     unified_message = {
         "channel": normalized_message.channel,
