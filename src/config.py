@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     whatsapp_api_base_url: str = "https://graph.facebook.com/v18.0"
     
     # Core API URL for forwarding normalized messages
-    core_api_url: str = "http://http://100.24.77.57:8003/api/v1/messages/unified"
+    core_api_url: str = "http://localhost:8003/api/v1/messages/unified"
     
     class Config:
         env_file = ".env"
